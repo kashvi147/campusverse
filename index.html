@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusVerse - Your Campus Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">CampusVerse</h1>
+            <div class="header-actions">
+                <a href="https://webportal.jiit.ac.in/jiitwebkiosk/" target="_blank" class="portal-link">
+                    <i class="fas fa-graduation-cap"></i> JIIT Portal
+                    <a href="feed.html">Feed</a>
+
+                </a>
+                <div class="profile-icon" onclick="showProfile()">
+                    <img id="headerProfilePic" src="https://ui-avatars.com/api/?name=Mahi&background=667eea&color=fff&size=128" alt="Profile">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard" id="dashboard">
+        <div class="dashboard-grid">
+            <!-- Feed Card -->
+            <div class="card" onclick="openFeed()">
+                <div class="card-icon">📰</div>
+                <h3>Feed</h3>
+                <p class="preview-text" id="feedPreview">Loading...</p>
+            </div>
+
+            <!-- Map Card -->
+            <div class="card" onclick="openMap()">
+                <div class="card-icon">🗺</div>
+                <h3>Campus Map</h3>
+                <p class="preview-text">Explore campus locations</p>
+            </div>
+
+            <!-- Study Material Card -->
+            <div class="card" onclick="openStudyMaterial()">
+                <div class="card-icon">📚</div>
+                <h3>Study Material</h3>
+                <p class="preview-text">PYQs & Lecture Notes</p>
+            </div>
+
+            <!-- Events Card -->
+            <div class="card" onclick="openEvents()">
+                <div class="card-icon">📅</div>
+                <h3>Events</h3>
+                <p class="preview-text">Upcoming campus events</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Profile Page -->
+    <div class="page" id="profilePage">
+        <button class="back-btn" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-pic-container">
+                    <img id="profilePic" src="https://ui-avatars.com/api/?name=Mahi&background=667eea&color=fff&size=128" alt="Profile Picture">
+                    <button class="change-pic-btn" onclick="changeProfilePic()"><i class="fas fa-camera"></i></button>
+                </div>
+                <h2 id="profileName">Mahi</h2>
+                <p class="profile-email">mahi@jiit.ac.in</p>
+            </div>
+
+            <div class="profile-section">
+                <h3>Bio</h3>
+                <textarea id="bioText" placeholder="Tell us about yourself..." maxlength="200">Computer Science student | Tech enthusiast | Love coding and coffee ☕</textarea>
+                <button class="btn-primary" onclick="saveBio()">Save Bio</button>
+            </div>
+
+            <div class="profile-section">
+                <h3>Friends (<span id="friendCount">0</span>)</h3>
+                <div class="friends-list" id="friendsList"></div>
+            </div>
+
+            <div class="profile-footer">
+                <button class="settings-btn" onclick="openSettings()">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feed Page -->
+    <div class="page" id="feedPage">
+        <button class="back-btn" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="split-view">
+            <div class="split-left">
+                <h2><i class="fas fa-newspaper"></i> Posts</h2>
+                <div class="posts-container" id="postsContainer"></div>
+            </div>
+            <div class="split-right">
+                <h2><i class="fas fa-comments"></i> Group Chats</h2>
+                <div class="chats-container" id="chatsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Page -->
+    <div class="page" id="mapPage">
+        <button class="back-btn" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="map-container">
+            <h2><i class="fas fa-map-marked-alt"></i> Campus Map</h2>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Study Material Page -->
+    <div class="page" id="studyPage">
+        <button class="back-btn" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="study-container">
+            <h2><i class="fas fa-book"></i> Study Material</h2>
+            <div class="study-tabs">
+                <button class="tab-btn active" onclick="switchStudyTab('pyqs')">Previous Year Questions</button>
+                <button class="tab-btn" onclick="switchStudyTab('notes')">Lecture Notes</button>
+            </div>
+            <div class="study-content" id="studyContent"></div>
+        </div>
+    </div>
+
+    <!-- Events Page -->
+    <div class="page" id="eventsPage">
+        <button class="back-btn" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Back</button>
+        <div class="events-container">
+            <div class="events-header">
+                <h2><i class="fas fa-calendar-alt"></i> Campus Events</h2>
+                <button class="btn-primary" onclick="openAddEventModal()"><i class="fas fa-plus"></i> Add Event</button>
+            </div>
+            <div class="events-layout">
+                <div id="calendar"></div>
+                <div class="upcoming-events">
+                    <h3>Upcoming Events</h3>
+                    <div id="upcomingEventsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <span class="close-btn" onclick="closeSettings()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label for="themeToggle">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <button class="btn-secondary" onclick="updateAccount()">
+                        <i class="fas fa-user-edit"></i> Update Account
+                    </button>
+                </div>
+                <div class="setting-item">
+                    <button class="btn-danger" onclick="deleteAccount()">
+                        <i class="fas fa-trash-alt"></i> Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal" id="addEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> Add Event</h3>
+                <span class="close-btn" onclick="closeAddEventModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addEventForm" onsubmit="addEvent(event)">
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title</label>
+                        <input type="text" id="eventTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">Date</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Time</label>
+                        <input type="time" id="eventTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventLocation">Location</label>
+                        <input type="text" id="eventLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Description</label>
+                        <textarea id="eventDescription" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Chatbot -->
+    <div class="chatbot-icon" onclick="toggleChatbot()">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- Chatbot Window -->
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+            <h4><i class="fas fa-robot"></i> CampusGPT</h4>
+            <span class="close-btn" onclick="toggleChatbot()">&times;</span>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="bot-message">
+                <p>Hi Mahi! I'm CampusGPT, your AI assistant for JIIT Noida. Ask me about events, attendance, study materials, campus buildings, or study tips!</p>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="handleChatKeypress(event)">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
